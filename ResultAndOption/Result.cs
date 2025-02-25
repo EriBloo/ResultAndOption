@@ -29,9 +29,9 @@
 
     public abstract class Result<T, E>
     {
-        public static implicit operator Result<T, E>(DelayedOk<T> ok) => new Ok<T, E>(ok.Value);
+        public static implicit operator Result<T, E>(DelayedOk<T> ok) => new ConcreteOk<T, E>(ok.Value);
 
-        public static implicit operator Result<T, E>(DelayedErr<E> err) => new Err<T, E>(err.Error);
+        public static implicit operator Result<T, E>(DelayedErr<E> err) => new ConcreteErr<T, E>(err.Error);
 
         public abstract bool IsOk();
 
@@ -40,6 +40,10 @@
         public abstract bool IsOkAnd(Func<T, bool> f);
 
         public abstract bool IsErrAnd(Func<E, bool> f);
+
+        public abstract Option<T> Ok();
+
+        public abstract Option<E> Err();
 
         public abstract Result<U, E> Map<U>(Func<T, U> ok);
 
@@ -74,11 +78,11 @@
         public abstract T UnwrapOrElse(Func<E, T> f);
     }
 
-    public sealed class Ok<T, E> : Result<T, E>
+    public sealed class ConcreteOk<T, E> : Result<T, E>
     {
         private readonly T _value;
 
-        internal Ok(T value)
+        internal ConcreteOk(T value)
         {
             _value = value;
         }
@@ -90,6 +94,10 @@
         public override bool IsOkAnd(Func<T, bool> f) => IsOk() && f(_value);
 
         public override bool IsErrAnd(Func<E, bool> f) => false;
+
+        public override Option<T> Ok() => Option.Some(_value);
+
+        public override Option<E> Err() => Option.None();
 
         public override Result<U, E> Map<U>(Func<T, U> f) => Result.Ok(f(_value));
 
@@ -129,11 +137,11 @@
         public override T UnwrapOrElse(Func<E, T> f) => _value;
     }
 
-    public sealed class Err<T, E> : Result<T, E>
+    public sealed class ConcreteErr<T, E> : Result<T, E>
     {
         private readonly E _error;
 
-        internal Err(E error)
+        internal ConcreteErr(E error)
         {
             _error = error;
         }
@@ -145,6 +153,10 @@
         public override bool IsOkAnd(Func<T, bool> f) => false;
 
         public override bool IsErrAnd(Func<E, bool> f) => IsErr() && f(_error);
+
+        public override Option<T> Ok() => Option.None();
+
+        public override Option<E> Err() => Option.Some(_error);
 
         public override Result<U, E> Map<U>(Func<T, U> f) => Result.Err(_error);
 
