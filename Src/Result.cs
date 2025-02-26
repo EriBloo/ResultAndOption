@@ -1,10 +1,23 @@
 ﻿using Options;
 
 namespace Results;
+
 public static class Result
 {
+    /// <summary>  
+    /// Creates an instance of DelayedOk with the specified value.  
+    /// </summary>  
+    /// <typeparam name="T">The type of the value.</typeparam>  
+    /// <param name="value">The value to wrap in a DelayedOk.</param>  
+    /// <returns>A DelayedOk containing the specified value.</returns>  
     public static DelayedOk<T> Ok<T>(T value) where T : notnull => new(value);
 
+    /// <summary>  
+    /// Creates an instance of DelayedErr with the specified error.  
+    /// </summary>  
+    /// <typeparam name="E">The type of the error.</typeparam>  
+    /// <param name="error">The error to wrap in a DelayedErr.</param>  
+    /// <returns>A DelayedErr containing the specified error.</returns>  
     public static DelayedErr<E> Err<E>(E error) where E : notnull => new(error);
 }
 

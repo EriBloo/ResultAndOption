@@ -1,11 +1,21 @@
 ﻿using Results;
 
 namespace Options;
-
+  
 public static class Option
 {
+    /// <summary>  
+    /// Creates an Option with a value.  
+    /// </summary>  
+    /// <typeparam name="T">The type of the value.</typeparam>  
+    /// <param name="value">The value to wrap in an Option.</param>  
+    /// <returns>An Option containing the value.</returns>  
     public static DelayedSome<T> Some<T>(T value) where T : notnull => new(value);
 
+    /// <summary>  
+    /// Creates an Option with no value.  
+    /// </summary>  
+    /// <returns>An Option with no value.</returns>  
     public static DelayedNone None() => new();
 }
 
