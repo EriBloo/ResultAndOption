@@ -4,12 +4,12 @@ namespace Options;
 
 public static class Option
 {
-    public static DelayedSome<T> Some<T>(T value) => new(value);
+    public static DelayedSome<T> Some<T>(T value) where T : notnull => new(value);
 
     public static DelayedNone None() => new();
 }
 
-public sealed record DelayedSome<T>
+public sealed record DelayedSome<T> where T : notnull
 {
     internal readonly T Value;
     internal DelayedSome(T value)
@@ -27,7 +27,7 @@ public sealed record DelayedNone
 /// Represents an optional value. An Option can either be Some (containing a value) or None (containing no value).
 /// </summary>
 /// <typeparam name="T">The type of the value that the Option may contain.</typeparam>
-public abstract record Option<T>
+public abstract record Option<T> where T : notnull
 {
     public static implicit operator Option<T>(DelayedSome<T> some) => new ConcreteSome<T>(some.Value);
 
@@ -59,7 +59,7 @@ public abstract record Option<T>
     /// Maps an Option<T> to Option<U> by applying a function to the Some value.
     /// </summary>
     /// <param name="f">A function to apply to the Some value.</param>
-    public abstract Option<U> Map<U>(Func<T, U> f);
+    public abstract Option<U> Map<U>(Func<T, U> f) where U : notnull;
 
     /// <summary>
     /// Maps an Option<T> to U by applying a function to the Some value or returns a default value if the option is None.
@@ -120,13 +120,13 @@ public abstract record Option<T>
     /// Returns the provided option if the option is Some, otherwise returns None.
     /// </summary>
     /// <param name="other">An option to return if the option is Some.</param>
-    public abstract Option<U> And<U>(Option<U> other);
+    public abstract Option<U> And<U>(Option<U> other) where U : notnull;
 
     /// <summary>
     /// Calls a function with the Some value and returns the result if the option is Some, otherwise returns None.
     /// </summary>
     /// <param name="f">A function to call with the Some value.</param>
-    public abstract Option<U> AndThen<U>(Func<T, Option<U>> f);
+    public abstract Option<U> AndThen<U>(Func<T, Option<U>> f) where U : notnull;
 
     /// <summary>
     /// Returns the option if the provided function returns true for the Some value, otherwise returns None.
@@ -153,7 +153,7 @@ public abstract record Option<T>
     public abstract Option<T> Xor(Option<T> other);
 }
 
-public sealed record ConcreteSome<T> : Option<T>
+public sealed record ConcreteSome<T> : Option<T> where T : notnull
 {
     private readonly T _value;
 
@@ -208,7 +208,7 @@ public sealed record ConcreteSome<T> : Option<T>
     public override Option<T> Xor(Option<T> other) => other.IsNone() ? this : Option.None();
 }
 
-public sealed record ConcreteNone<T> : Option<T>
+public sealed record ConcreteNone<T> : Option<T> where T : notnull
 {
     public override bool IsSome() => false;
 

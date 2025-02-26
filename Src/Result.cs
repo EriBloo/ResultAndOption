@@ -3,12 +3,12 @@
 namespace Results;
 public static class Result
 {
-    public static DelayedOk<T> Ok<T>(T value) => new(value);
+    public static DelayedOk<T> Ok<T>(T value) where T : notnull => new(value);
 
-    public static DelayedErr<E> Err<E>(E error) => new(error);
+    public static DelayedErr<E> Err<E>(E error) where E : notnull => new(error);
 }
 
-public sealed record DelayedOk<T>
+public sealed record DelayedOk<T> where T : notnull
 {
     internal readonly T Value;
 
@@ -18,7 +18,7 @@ public sealed record DelayedOk<T>
     }
 }
 
-public sealed record DelayedErr<E>
+public sealed record DelayedErr<E> where E : notnull
 {
     internal readonly E Error;
 
@@ -33,7 +33,7 @@ public sealed record DelayedErr<E>
 /// </summary>
 /// <typeparam name="T">The type of the value that represents a successful result.</typeparam>
 /// <typeparam name="E">The type of the value that represents an error result.</typeparam>
-public abstract record Result<T, E>
+public abstract record Result<T, E> where T : notnull where E : notnull
 {
     public static implicit operator Result<T, E>(DelayedOk<T> ok) => new ConcreteOk<T, E>(ok.Value);
 
@@ -75,7 +75,7 @@ public abstract record Result<T, E>
     /// Maps a Result<T, E> to Result<U, E> by applying a function to the Ok value.
     /// </summary>
     /// <param name="ok">A function to apply to the Ok value.</param>
-    public abstract Result<U, E> Map<U>(Func<T, U> ok);
+    public abstract Result<U, E> Map<U>(Func<T, U> ok) where U : notnull;
 
     /// <summary>
     /// Maps a Result<T, E> to U by applying a function to the Ok value or returns a default value if the result is Err.
@@ -95,7 +95,7 @@ public abstract record Result<T, E>
     /// Maps a Result<T, E> to Result<T, F> by applying a function to the Err value.
     /// </summary>
     /// <param name="f">A function to apply to the Err value.</param>
-    public abstract Result<T, F> MapErr<F>(Func<E, F> f);
+    public abstract Result<T, F> MapErr<F>(Func<E, F> f) where F : notnull;
 
     /// <summary>
     /// Calls a function with the Ok value if the result is Ok.
@@ -135,25 +135,25 @@ public abstract record Result<T, E>
     /// Returns the provided result if the result is Ok, otherwise returns the Err value.
     /// </summary>
     /// <param name="other">A result to return if the result is Ok.</param>
-    public abstract Result<U, E> And<U>(Result<U, E> other);
+    public abstract Result<U, E> And<U>(Result<U, E> other) where U : notnull;
 
     /// <summary>
     /// Calls a function with the Ok value and returns the result if the result is Ok, otherwise returns the Err value.
     /// </summary>
     /// <param name="f">A function to call with the Ok value.</param>
-    public abstract Result<U, E> AndThen<U>(Func<T, Result<U, E>> f);
+    public abstract Result<U, E> AndThen<U>(Func<T, Result<U, E>> f) where U : notnull;
 
     /// <summary>
     /// Returns the provided result if the result is Err, otherwise returns the Ok value.
     /// </summary>
     /// <param name="other">A result to return if the result is Err.</param>
-    public abstract Result<T, F> Or<F>(Result<T, F> other);
+    public abstract Result<T, F> Or<F>(Result<T, F> other) where F : notnull;
 
     /// <summary>
     /// Calls a function with the Err value and returns the result if the result is Err, otherwise returns the Ok value.
     /// </summary>
     /// <param name="f">A function to call with the Err value.</param>
-    public abstract Result<T, F> OrElse<F>(Func<E, Result<T, F>> f);
+    public abstract Result<T, F> OrElse<F>(Func<E, Result<T, F>> f) where F : notnull;
 
     /// <summary>
     /// Returns the Ok value or a default value if the result is Err.
@@ -168,7 +168,7 @@ public abstract record Result<T, E>
     public abstract T UnwrapOrElse(Func<E, T> f);
 }
 
-public sealed record ConcreteOk<T, E> : Result<T, E>
+public sealed record ConcreteOk<T, E> : Result<T, E> where T : notnull where E : notnull
 {
     private readonly T _value;
 
@@ -227,7 +227,7 @@ public sealed record ConcreteOk<T, E> : Result<T, E>
     public override T UnwrapOrElse(Func<E, T> f) => _value;
 }
 
-public sealed record ConcreteErr<T, E> : Result<T, E>
+public sealed record ConcreteErr<T, E> : Result<T, E> where T : notnull where E : notnull
 {
     private readonly E _error;
 
