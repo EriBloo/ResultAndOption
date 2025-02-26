@@ -9,7 +9,7 @@ public static class Option
     public static DelayedNone None() => new();
 }
 
-public sealed class DelayedSome<T>
+public sealed record DelayedSome<T>
 {
     internal readonly T Value;
     internal DelayedSome(T value)
@@ -18,7 +18,7 @@ public sealed class DelayedSome<T>
     }
 }
 
-public sealed class DelayedNone
+public sealed record DelayedNone
 {
     internal DelayedNone() { }
 }
@@ -27,7 +27,7 @@ public sealed class DelayedNone
 /// Represents an optional value. An Option can either be Some (containing a value) or None (containing no value).
 /// </summary>
 /// <typeparam name="T">The type of the value that the Option may contain.</typeparam>
-public abstract class Option<T>
+public abstract record Option<T>
 {
     public static implicit operator Option<T>(DelayedSome<T> some) => new ConcreteSome<T>(some.Value);
 
@@ -153,7 +153,7 @@ public abstract class Option<T>
     public abstract Option<T> Xor(Option<T> other);
 }
 
-public sealed class ConcreteSome<T> : Option<T>
+public sealed record ConcreteSome<T> : Option<T>
 {
     private readonly T _value;
 
@@ -208,7 +208,7 @@ public sealed class ConcreteSome<T> : Option<T>
     public override Option<T> Xor(Option<T> other) => other.IsNone() ? this : Option.None();
 }
 
-public sealed class ConcreteNone<T> : Option<T>
+public sealed record ConcreteNone<T> : Option<T>
 {
     public override bool IsSome() => false;
 

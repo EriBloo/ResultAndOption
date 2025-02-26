@@ -8,7 +8,7 @@ public static class Result
     public static DelayedErr<E> Err<E>(E error) => new(error);
 }
 
-public sealed class DelayedOk<T>
+public sealed record DelayedOk<T>
 {
     internal readonly T Value;
 
@@ -18,7 +18,7 @@ public sealed class DelayedOk<T>
     }
 }
 
-public sealed class DelayedErr<E>
+public sealed record DelayedErr<E>
 {
     internal readonly E Error;
 
@@ -33,7 +33,7 @@ public sealed class DelayedErr<E>
 /// </summary>
 /// <typeparam name="T">The type of the value that represents a successful result.</typeparam>
 /// <typeparam name="E">The type of the value that represents an error result.</typeparam>
-public abstract class Result<T, E>
+public abstract record Result<T, E>
 {
     public static implicit operator Result<T, E>(DelayedOk<T> ok) => new ConcreteOk<T, E>(ok.Value);
 
@@ -168,7 +168,7 @@ public abstract class Result<T, E>
     public abstract T UnwrapOrElse(Func<E, T> f);
 }
 
-public sealed class ConcreteOk<T, E> : Result<T, E>
+public sealed record ConcreteOk<T, E> : Result<T, E>
 {
     private readonly T _value;
 
@@ -227,7 +227,7 @@ public sealed class ConcreteOk<T, E> : Result<T, E>
     public override T UnwrapOrElse(Func<E, T> f) => _value;
 }
 
-public sealed class ConcreteErr<T, E> : Result<T, E>
+public sealed record ConcreteErr<T, E> : Result<T, E>
 {
     private readonly E _error;
 
