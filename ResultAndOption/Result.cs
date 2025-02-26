@@ -27,54 +27,143 @@
         }
     }
 
+    /// <summary>
+    /// Represents the result of an operation that can either be a success (Ok) or a failure (Err).
+    /// </summary>
+    /// <typeparam name="T">The type of the value that represents a successful result.</typeparam>
+    /// <typeparam name="E">The type of the value that represents an error result.</typeparam>
     public abstract class Result<T, E>
     {
         public static implicit operator Result<T, E>(DelayedOk<T> ok) => new ConcreteOk<T, E>(ok.Value);
 
         public static implicit operator Result<T, E>(DelayedErr<E> err) => new ConcreteErr<T, E>(err.Error);
 
+        /// <summary>
+        /// Returns true if the result is Ok.
+        /// </summary>
         public abstract bool IsOk();
 
+        /// <summary>
+        /// Returns true if the result is Err.
+        /// </summary>
         public abstract bool IsErr();
 
+        /// <summary>
+        /// Returns true if the result is Ok and the provided function returns true.
+        /// </summary>
+        /// <param name="f">A function to test the Ok value.</param>
         public abstract bool IsOkAnd(Func<T, bool> f);
 
+        /// <summary>
+        /// Returns true if the result is Err and the provided function returns true.
+        /// </summary>
+        /// <param name="f">A function to test the Err value.</param>
         public abstract bool IsErrAnd(Func<E, bool> f);
 
+        /// <summary>
+        /// Returns the Ok value as an Option if the result is Ok, otherwise returns None.
+        /// </summary>
         public abstract Option<T> Ok();
 
+        /// <summary>
+        /// Returns the Err value as an Option if the result is Err, otherwise returns None.
+        /// </summary>
         public abstract Option<E> Err();
 
+        /// <summary>
+        /// Maps a Result<T, E> to Result<U, E> by applying a function to the Ok value.
+        /// </summary>
+        /// <param name="ok">A function to apply to the Ok value.</param>
         public abstract Result<U, E> Map<U>(Func<T, U> ok);
 
+        /// <summary>
+        /// Maps a Result<T, E> to U by applying a function to the Ok value or returns a default value if the result is Err.
+        /// </summary>
+        /// <param name="def">A default value to return if the result is Err.</param>
+        /// <param name="f">A function to apply to the Ok value.</param>
         public abstract U MapOr<U>(U def, Func<T, U> f);
 
+        /// <summary>
+        /// Maps a Result<T, E> to U by applying a function to the Ok value or a fallback function to the Err value.
+        /// </summary>
+        /// <param name="def">A fallback function to apply to the Err value.</param>
+        /// <param name="f">A function to apply to the Ok value.</param>
         public abstract U MapOrElse<U>(Func<E, U> def, Func<T, U> f);
 
+        /// <summary>
+        /// Maps a Result<T, E> to Result<T, F> by applying a function to the Err value.
+        /// </summary>
+        /// <param name="f">A function to apply to the Err value.</param>
         public abstract Result<T, F> MapErr<F>(Func<E, F> f);
 
+        /// <summary>
+        /// Calls a function with the Ok value if the result is Ok.
+        /// </summary>
+        /// <param name="f">A function to call with the Ok value.</param>
         public abstract Result<T, E> Inspect(Action<T> f);
 
+        /// <summary>
+        /// Calls a function with the Err value if the result is Err.
+        /// </summary>
+        /// <param name="f">A function to call with the Err value.</param>
         public abstract Result<T, E> InspectErr(Action<E> f);
 
+        /// <summary>
+        /// Returns the Ok value or throws an exception with the provided message if the result is Err.
+        /// </summary>
+        /// <param name="message">A message to include in the exception if the result is Err.</param>
         public abstract T Expect(string message);
 
+        /// <summary>
+        /// Returns the Ok value or throws an exception if the result is Err.
+        /// </summary>
         public abstract T Unwrap();
 
+        /// <summary>
+        /// Returns the Err value or throws an exception with the provided message if the result is Ok.
+        /// </summary>
+        /// <param name="message">A message to include in the exception if the result is Ok.</param>
         public abstract E ExpectErr(string message);
 
+        /// <summary>
+        /// Returns the Err value or throws an exception if the result is Ok.
+        /// </summary>
         public abstract E UnwrapErr();
 
+        /// <summary>
+        /// Returns the provided result if the result is Ok, otherwise returns the Err value.
+        /// </summary>
+        /// <param name="other">A result to return if the result is Ok.</param>
         public abstract Result<U, E> And<U>(Result<U, E> other);
 
+        /// <summary>
+        /// Calls a function with the Ok value and returns the result if the result is Ok, otherwise returns the Err value.
+        /// </summary>
+        /// <param name="f">A function to call with the Ok value.</param>
         public abstract Result<U, E> AndThen<U>(Func<T, Result<U, E>> f);
 
+        /// <summary>
+        /// Returns the provided result if the result is Err, otherwise returns the Ok value.
+        /// </summary>
+        /// <param name="other">A result to return if the result is Err.</param>
         public abstract Result<T, F> Or<F>(Result<T, F> other);
 
+        /// <summary>
+        /// Calls a function with the Err value and returns the result if the result is Err, otherwise returns the Ok value.
+        /// </summary>
+        /// <param name="f">A function to call with the Err value.</param>
         public abstract Result<T, F> OrElse<F>(Func<E, Result<T, F>> f);
 
+        /// <summary>
+        /// Returns the Ok value or a default value if the result is Err.
+        /// </summary>
+        /// <param name="def">A default value to return if the result is Err.</param>
         public abstract T UnwrapOr(T def);
 
+        /// <summary>
+        /// Returns the Ok value or calls a function with the Err value and returns the result if the result is Err.
+        /// </summary>
+        /// <param name="f">A function to call with the Err value.</param>
         public abstract T UnwrapOrElse(Func<E, T> f);
     }
 
