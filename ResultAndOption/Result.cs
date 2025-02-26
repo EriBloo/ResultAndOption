@@ -91,7 +91,7 @@
 
         public override bool IsErr() => false;
 
-        public override bool IsOkAnd(Func<T, bool> f) => IsOk() && f(_value);
+        public override bool IsOkAnd(Func<T, bool> f) => f(_value);
 
         public override bool IsErrAnd(Func<E, bool> f) => false;
 
@@ -152,7 +152,7 @@
 
         public override bool IsOkAnd(Func<T, bool> f) => false;
 
-        public override bool IsErrAnd(Func<E, bool> f) => IsErr() && f(_error);
+        public override bool IsErrAnd(Func<E, bool> f) => f(_error);
 
         public override Option<T> Ok() => Option.None();
 
